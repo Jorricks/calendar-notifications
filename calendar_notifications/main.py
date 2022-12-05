@@ -5,6 +5,7 @@ import time
 from typing import List
 
 from ical_library import client
+from ical_library.help_modules import dt_utils
 from ical_library.ical_components import VCalendar, VEvent, VToDo
 from ical_library.timeline import Timeline
 from pendulum import DateTime, Duration
@@ -26,7 +27,7 @@ def sleep_until(future: DateTime):
 def get_next_ical_component(ical_components_these_7_days: List[VEvent | VToDo]) -> VEvent | VToDo | None:
     """Get the upcoming iCalendar event. Note: we assume that all_status_changes is sorted."""
     for start_status_change in ical_components_these_7_days:
-        if start_status_change.start > DateTime.now():
+        if dt_utils.convert_time_object_to_datetime(start_status_change.start) > DateTime.now():
             return start_status_change
     return None
 
@@ -65,6 +66,7 @@ def main() -> None:
         logger.info(f"Next up is: {next_event}.")
         sleep_until(next_event.start)
         CNConfiguration().event_start_handler.run(next_event)
+        next_event = None
 
 
 if __name__ == "__main__":
