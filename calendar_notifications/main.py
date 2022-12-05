@@ -27,7 +27,7 @@ def sleep_until(future: DateTime):
 def get_next_ical_component(ical_components_these_7_days: List[VEvent | VToDo]) -> VEvent | VToDo | None:
     """Get the upcoming iCalendar event. Note: we assume that all_status_changes is sorted."""
     for start_status_change in ical_components_these_7_days:
-        if dt_utils.convert_time_object_to_datetime(start_status_change.start) > DateTime.now():
+        if dt_utils.convert_time_object_to_aware_datetime(start_status_change.start) > DateTime.now():
             return start_status_change
     return None
 
