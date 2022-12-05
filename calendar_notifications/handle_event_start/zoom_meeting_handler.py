@@ -41,7 +41,8 @@ class ZoomMeetingHandler(AbstractEventStartHandler):
 
         event: VEvent = ical_instance
         extras: Dict[str, Any] = {}
-        zoom_meeting_search = re.search(r"adyen\.zoom\.us/j/(\d+)", event.description.value)
+        event_description = event.description.value if event.description else ""
+        zoom_meeting_search = re.search(r"adyen\.zoom\.us/j/(\d+)", event_description)
         zoom_conf_number = zoom_meeting_search.group(1) if zoom_meeting_search else None
         if zoom_conf_number:
             extras["action_button_str"] = "Join zoom meeting"
