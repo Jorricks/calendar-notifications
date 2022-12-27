@@ -4,6 +4,7 @@ import logging
 import time
 from typing import List
 
+import requests as requests  # type: ignore
 from ical_library import client
 from ical_library.help_modules import dt_utils
 from ical_library.ical_components import VCalendar, VEvent, VToDo
@@ -32,12 +33,27 @@ def get_next_ical_component(ical_components_these_7_days: List[VEvent | VToDo]) 
     return None
 
 
+def parse_icalendar_url(url: str) -> VCalendar:
+    """
+    Given a URL to an iCalendar file, return a parsed VCalendar instance.
+    :param url: The URL to the iCalendar file.
+    :return: a VCalendar instance with all it's iCalendar components like VEvents, VToDos, VTimeZones etc.
+    """
+    while True:
+        print("Trying to fetch calendar.")
+        try:
+            response = requests.get(url)
+            return client.parse_lines_into_calendar(response.text)
+        except Exception as exc:
+            print(f"Failed with exception {str(exc)}.")
+
+
 def get_events_in_upcoming_week() -> List[VEvent | VToDo]:
     """Gets the calendar events in the upcoming 7 days."""
     logger.info("Loading your calendar, this might take some time.")
     now = DateTime.now()
     week_from_now = now + Duration(days=7)
-    calendar: VCalendar = client.parse_icalendar_url(CNConfiguration().private_ical_url)
+    calendar: VCalendar = parse_icalendar_url(CNConfiguration().private_ical_url)
     timeline: Timeline = calendar.get_limited_timeline(now, week_from_now)
     return [item for item in timeline.overlapping(now, week_from_now) if isinstance(item, (VEvent, VToDo))]
 
