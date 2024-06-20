@@ -40,12 +40,13 @@ def parse_icalendar_url(url: str) -> VCalendar:
     :return: a VCalendar instance with all it's iCalendar components like VEvents, VToDos, VTimeZones etc.
     """
     while True:
-        print("Trying to fetch calendar.")
+        logger.info("Trying to fetch calendar.")
         try:
-            response = requests.get(url)
+            response = requests.get(url, timeout=20.0)
+            logger.info("Parsing your calendar. This may take up to a minute depending on the size of your calendar.")
             return client.parse_lines_into_calendar(response.text)
         except Exception as exc:
-            print(f"Failed with exception {str(exc)}.")
+            logger.info(f"Failed with exception {str(exc)}.")
 
 
 def get_events_in_upcoming_week() -> List[VEvent | VToDo]:
@@ -73,7 +74,7 @@ def main() -> None:
                 logger.debug("No event planned for the next 20 minutes. Refreshing in 15 minutes.")
                 time.sleep(15 * 60)
             schema = get_events_in_upcoming_week()
-            print("DONE")
+            logger.info("DONE")
             logger.debug("Done loading your calendar.")
             next_event = get_next_ical_component(schema)
 
