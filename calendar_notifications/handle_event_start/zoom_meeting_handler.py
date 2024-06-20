@@ -30,7 +30,7 @@ def open_zoom_link(conf_number: int | str) -> None:
 class ZoomMeetingHandler(AbstractEventStartHandler):
     @staticmethod
     def play_notification_sound(_: iCalComponent):
-        path_to_notification = get_sources_root() / "bin" / "notification.mp3"
+        path_to_notification = get_sources_root() / "bin" / "honk.m4a"
         subprocess.run(f"afplay {str(path_to_notification.resolve())}", shell=True)
         logger.info("Played notification sound.")
 
